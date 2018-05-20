@@ -1,0 +1,134 @@
+<!doctype html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<title>严荣兴个人博客</title>
+<meta name="keywords" content="个人博客,严荣兴个人博客,个人博客模板,严荣兴" />
+<meta name="description" content="严荣兴个人博客" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/base.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<link href="css/m.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/layui.css"  media="all">
+  <script src="/js/jquery-1.8.0.min.js"></script>
+  <script src="/js/layui.js" charset="utf-8"></script>
+<!--[if lt IE 9]>
+<script src="js/modernizr.js"></script>
+<![endif]-->
+<script th:inline="javascript">
+    String.prototype.replaceAll = function(search, replacement) {
+        var target = this;
+        return target.replace(new RegExp(search, 'g'), replacement);
+    };
+window.onload = function ()
+{
+	var oH2 = document.getElementsByTagName("h2")[0];
+	var oUl = document.getElementsByTagName("ul")[0];
+	oH2.onclick = function ()
+	{
+		var style = oUl.style;
+		style.display = style.display == "block" ? "none" : "block";
+		oH2.className = style.display == "block" ? "open" : ""
+	}
+}
+
+layui.use(['layer', 'laypage'], function(){
+    var blogsHtml = $("#blogs").html();
+    var data = [[${blogs}]];
+    var laypage = layui.laypage;
+    var layer = layui.layer;
+    //执行一个laypage实例
+    laypage.render({
+        elem: 'page_block' //注意，这里的 test1 是 ID，不用加 # 号
+        ,count: [[${blogs.size()}]], //数据总数，从服务端得到
+        limit:5,//每页显示的条数。
+        jump: function(obj){
+            $("#blogs").html("");
+            var arr = [];
+            var thisData =  data.concat().splice(obj.curr*obj.limit - obj.limit, obj.limit);
+            layui.each(thisData, function(index, item){
+                str = blogsHtml;
+                str = str.replaceAll('hidden=""',"");
+                str = str.replaceAll("{{blogId}}",item.id);
+                str = str.replaceAll("{{blogTitle}}",item.title);
+                str = str.replaceAll("{{blogDescription}}",item.description);
+                str = str.replaceAll("{{blogTypeModelName}}",item.typeModel.name);
+                str = str.replaceAll("{{blogCreateTime}}",item.createTime.substring(0,10));
+                arr.push(str);
+            });
+            localStorage.setItem("curr",obj.curr);
+            $("#blogs").html(arr.join(''));
+        }
+    });
+});
+function delBlog(id){
+    layer.open({
+        title:"",
+        skin:"layui-layer-rim",
+        content:"确定要删除此博客？",
+        btn:["确认"],
+        yes:function (index, layero) {
+            $.ajax({
+                url:"/blog/"+id,
+                type:"DELETE",
+                contentType: "application/json;charset=UTF-8",
+                dataType:"JSON",
+                success:function(data){
+                    layer.msg("发表成功");
+                    window.location.reload();
+                }
+            });
+            layer.close(index);
+        }
+    });
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="tophead">
+    <div class="logo"><a href="/">严荣兴个人博客</a></div>
+    <div id="mnav">
+      <h2><span class="navicon"></span></h2>
+      <ul>
+        <li><a href="">网站首页</a></li>
+      </ul>
+    </div>
+    <nav class="topnav" id="topnav">
+      <ul>
+        <li><a href="">网站首页</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<article>
+  <div class="sidebar">
+    <div class="about">
+      <div class="avatar"> <img src="images/avatar.jpg" alt=""> </div>
+      <p class="abname">betterxing | 严荣兴</p>
+      <p class="abposition">JAVA工程师</p>
+      <div class="abtext"> 一个90技术宅男！2015年入行。一直潜心研究后端技术，一边工作一边积累经验，向世界分享一些个人学习经验与心得。 </div>
+    </div>
+  </div>
+  <div  class="blogs" >
+    <div id="blogs">
+      <li hidden="">
+        <h3 class="blogtitle"><a href="/blog?id={{blogId}}" text = "">{{blogTitle}}</a></h3>
+        <div class="bloginfo">
+          <p >{{blogDescription}}</p>
+        </div>
+        <div class="autor"><span class="lm"><a href="/" title="{{blogTypeModelName}}"  target="_blank" class="classname">{{blogTypeModelName}}</a></span><span  class="dtime">{{blogCreateTime}}</span><span class="readmore"><a href="/blog?id={{blogId}}">阅读原文</a></span><span class="readmore"><a href="javascript:" onclick="delBlog('{{blogId}}')" style="color: red;">删除</a></span><span class="readmore"><a href="/alter/{{blogId}}?key=19960226"  >修改</a></span></div>
+      </li>
+    </div>
+    <div id="page_block"></div>
+  </div>
+
+</article>
+<div class="blank"></div>
+<footer>
+  <p>Design by <a href="/">严荣兴个人博客</a> <a href="/">京ICP备没有备案号-1</a></p>
+</footer>
+<script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="utf-8">
+<title>内容页_严荣兴个人博客 - 一个站在web前端设计之路的女技术员个人博客网站</title>
+<meta name="keywords" content="个人博客,严荣兴个人博客,个人博客模板,严荣兴" />
+<meta name="description" content="严荣兴个人博客，是一个站在web前端设计之路的女程序员个人网站，提供个人博客模板免费资源下载的个人原创网站。" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="css/base.css" rel="stylesheet">
+<link href="css/index.css" rel="stylesheet">
+<link href="css/m.css" rel="stylesheet">
+  <script src="/js/jquery-1.8.0.min.js"></script>
+
+  <script src="https://cdn.bootcss.com/showdown/1.3.0/showdown.min.js"></script>
+<!--[if lt IE 9]>
+<script src="js/modernizr.js"></script>
+<![endif]-->
+<script th:inline="javascript">
+window.onload = function ()
+{
+	var oH2 = document.getElementsByTagName("h2")[0];
+	var oUl = document.getElementsByTagName("ul")[0];
+	oH2.onclick = function ()
+	{
+		var style = oUl.style;
+		style.display = style.display == "block" ? "none" : "block";
+		oH2.className = style.display == "block" ? "open" : ""
+	}
+	var md = [[${blog.detailMd}]];
+    console.log(md);
+    var converter = new showdown.Converter(); //初始化转换器
+    var htmlcontent  = converter.makeHtml(md); //将MarkDown转为html格式的内容
+    document.getElementById("news_infos").innerHTML = htmlcontent;
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="tophead">
+    <div class="logo"><a href="/">严荣兴个人博客</a></div>
+    <div id="mnav">
+      <h2><span class="navicon"></span></h2>
+      <ul>
+        <li><a href="">网站首页</a></li>
+      </ul>
+    </div>
+    <nav class="topnav" id="topnav">
+      <ul>
+        <li><a href="">网站首页</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<article>
+  <h1 class="t_nav"><span th:text = "|您现在的位置是：首页 > ${type.name} > ${blog.title}|"></span><a href="/" class="n1">网站首页</a></h1>
+  <div class="infos">
+    <div class="newsview">
+      <h3 class="news_title" th:text = "${blog.title}"></h3>
+      <div class="news_author"><span class="au01"><a href="" th:text = "${blog.autor}"></a></span><span  th:text = "${#dates.format(blog.createTime,'yyyy-MM-dd HH:mm:ss')}"  class="au02"></span></div>
+      <div class="tags">
+        <a th:each="tag:${blog.tags}" href="/e/tags/?tagname=%B8%F6%C8%CB%B2%A9%BF%CD&amp;tempid=13" target="_blank">[[${tag}]]</a> &nbsp;
+      </div>
+      <div class="news_about"><strong>简介</strong><span th:text="${blog.description}"></span></div>
+      <div id="news_infos" class="news_infos"></div>
+    </div>
+    <div class="share"> </div>
+  </div>
+  <div class="sidebar">
+    <div class="lmnav">
+      <h2 class="hometitle">栏目导航</h2>
+      <ul class="navbor">
+
+        <li><a href="javascript:volid(0);" style="cursor: default;">[[${type.name}]]</a>
+          <ul>
+            <li th:each="b,bStat : ${blogs}">
+              <div th:if="${b.id} == ${blog.id}">
+              <a href="javascript:volid(0);" style="cursor: default;color:red;" >[[${blog.title}]]</a>
+              </div>
+              <div th:if="${b.id} != ${blog.id}">
+                <a th:href="|/blog?id=${b.id}|">[[${blog.title}]]</a>
+              </div>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</article>
+<footer>
+  <p>Design by <a href="/">严荣兴个人博客</a> <a href="/">京ICP备11002373号-1</a></p>
+</footer>
+<script src="js/nav.js"></script> 
+<script type="text/javascript">
+jQuery.noConflict();
+jQuery(function() { 
+    var elm = jQuery('#left_flow2'); 
+    var startPos = jQuery(elm).offset().top; 
+    jQuery.event.add(window, "scroll", function() { 
+        var p = jQuery(window).scrollTop(); 
+        jQuery(elm).css('position',((p) > startPos) ? 'fixed' : ''); 
+
+        jQuery(elm).css('top',((p) > startPos) ? '0' : '');
+    }); 
+}); 
+</script>
+</body>
+</html>
